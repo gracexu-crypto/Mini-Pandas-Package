@@ -5,7 +5,9 @@ class Series:
         self.data = np.array(data, copy=copy)
         self.index = list(index) if index is not None else list(range(len(data)))    
         self.name = name
-        
+
+         self._index_map = self.index_map()
+
         if len(self.data) != len(self.index):
             raise ValueError("data and index must have the same length")
 
