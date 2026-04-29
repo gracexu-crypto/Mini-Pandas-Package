@@ -1,3 +1,4 @@
+import csv
 from .series import Series
 
 class DataFrame:
@@ -79,6 +80,9 @@ class DataFrame:
             return self.data[key]
 
         if isinstance(key, list):
+             if all(isinstance(item, bool) for item in key):
+                return self._filter_rows(key)
+
             new_data = {}
             for column in key:
                 if column not in self.data:
@@ -86,7 +90,25 @@ class DataFrame:
                 new_data[column] = self.data[column].copy()
             return DataFrame(new_data, index=self.index.copy())
 
+        if isinstance(key, Series):
+            return self._filter_rows(list(key.data))
+            
         raise KeyError(key)
+
+     def _filter_rows(self, mask):
+        if len(mask) != len(self.index):
+            raise ValueError("Boolean mask must match DataFrame length")
+
+        new_index = []
+        new_data = {column: [] for column in self.columns}
+
+        for i, keep_row in enumerate(mask):
+            if keep_row:
+                new_index.append(self.index[i])
+                for column in self.columns:
+                    new_data[column].append(self.data[column].data[i])
+
+        return DataFrame(new_data, index=new_index)
 
     def __setitem__(self, key, value):
         if isinstance(value, Series):
@@ -136,3 +158,87 @@ class DataFrame:
             },
             index=self.index.copy()
         )
+
+ @classmethod
+    def from_csv(cls, filename):
+        with open(filename, "r", newline="") as file:
+            reader = csv.DictReader(file)
+
+            data = {}
+            for column in reader.fieldnames:
+                data[column] = []
+
+            for row in reader:
+                for column in reader.fieldnames:
+                    data[column].append(row[column])
+
+        return cls(data)
+
+    def to_csv(self, filename):
+        with open(filename, "w", newline="") as file:
+            writer = csv.writer(file)
+
+            writer.writerow(self.columns)
+
+            for row_pos in range(len(self.index)):
+                row = []
+                for column in self.columns:
+                    row.append(self.data[column].data[row_pos])
+                writer.writerow(row)
+      def isnull(self):
+        new_data = {}
+
+        for column in self.columns:
+            new_data[column] = []
+            for value in self.data[column].data:
+                if value is None or value == "":
+                    new_data[column].append(True)
+                else:
+                    new_data[column].append(False)
+
+        return DataFrame(new_data, index=self.index.copy())
+
+    def notnull(self):
+        new_data = {}
+
+        for column in self.columns:
+            new_data[column] = []
+            for value in self.data[column].data:
+                if value is None or value == "":
+                    new_data[column].append(False)
+                else:
+                    new_data[column].append(True)
+
+        return DataFrame(new_data, index=self.index.copy())
+
+    def fillna(self, value):
+        new_data = {}
+
+        for column in self.columns:
+            new_data[column] = []
+            for item in self.data[column].data:
+                if item is None or item == "":
+                    new_data[column].append(value)
+                else:
+                    new_data[column].append(item)
+
+        return DataFrame(new_data, index=self.index.copy())
+
+    def dropna(self):
+        new_index = []
+        new_data = {column: [] for column in self.columns}
+
+        for row_pos in range(len(self.index)):
+            has_missing = False
+
+            for column in self.columns:
+                value = self.data[column].data[row_pos]
+                if value is None or value == "":
+                    has_missing = True
+
+            if not has_missing:
+                new_index.append(self.index[row_pos])
+                for column in self.columns:
+                    new_data[column].append(self.data[column].data[row_pos])
+
+        return DataFrame(new_data, index=new_index)
