@@ -1,5 +1,5 @@
 import numpy as np
-from mini_pandas import Series
+from src.core.series import Series
 
 def test_series_creation():
   s = Series([10, 20, 30], name="Scores")
@@ -36,7 +36,7 @@ def test_series_indexing():
 def test_series_math():
     s = Series([2, 4, 6]) 
 
- assert s.sum() == 12
+    assert s.sum() == 12
     assert s.mean() == 4
     assert s.min() == 2
     assert s.max() == 6
@@ -67,9 +67,3 @@ def test_series_comparison():
     print("Series comparison test passed")
 
 
-test_series_creation()
-test_series_custom_index()
-test_series_indexing()
-test_series_math()
-test_series_arithmetic()
-test_series_comparison()
