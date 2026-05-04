@@ -80,7 +80,7 @@ class DataFrame:
             return self.data[key]
 
         if isinstance(key, list):
-             if all(isinstance(item, bool) for item in key):
+            if all(isinstance(item, bool) for item in key):
                 return self._filter_rows(key)
 
             new_data = {}
@@ -95,7 +95,7 @@ class DataFrame:
             
         raise KeyError(key)
 
-     def _filter_rows(self, mask):
+    def _filter_rows(self, mask):
         if len(mask) != len(self.index):
             raise ValueError("Boolean mask must match DataFrame length")
 
@@ -159,7 +159,7 @@ class DataFrame:
             index=self.index.copy()
         )
 
- @classmethod
+    @classmethod
     def from_csv(cls, filename):
         with open(filename, "r", newline="") as file:
             reader = csv.DictReader(file)
@@ -185,7 +185,7 @@ class DataFrame:
                 for column in self.columns:
                     row.append(self.data[column].data[row_pos])
                 writer.writerow(row)
-      def isnull(self):
+    def isnull(self):
         new_data = {}
 
         for column in self.columns:
