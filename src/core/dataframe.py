@@ -1,4 +1,5 @@
 import csv
+import numpy as np
 from .series import Series
 
 class DataFrame:
@@ -80,7 +81,7 @@ class DataFrame:
             return self.data[key]
 
         if isinstance(key, list):
-            if all(isinstance(item, bool) for item in key):
+            if all(isinstance(item, (bool, np.bool_)) for item in key):
                 return self._filter_rows(key)
 
             new_data = {}
@@ -158,6 +159,105 @@ class DataFrame:
             },
             index=self.index.copy()
         )
+
+    def apply(self, func):
+        result = {}
+
+        for column in self.columns:
+            result[column] = func(self.data[column])
+
+        return result
+
+    def apply_column(self, column, func):
+        if column not in self.data:
+            raise KeyError(column)
+
+        result = []
+
+        for value in self.data[column].data:
+            result.append(func(value))
+
+        return Series(result, index=self.index.copy(), name=column)
+
+    def apply_columns(self, columns, func):
+        new_data = {}
+
+        for column in self.columns:
+            if column in columns:
+                new_data[column] = self.apply_column(column, func)
+            else:
+                new_data[column] = self.data[column].copy()
+
+        return DataFrame(new_data, index=self.index.copy())
+
+    def arithmetic(self, other, op):
+        new_data = {}
+
+        if isinstance(other, dict):
+            for column in self.columns:
+                if column in other:
+                    new_data[column] = self.data[column].arithmetic(other[column], op)
+                else:
+                    new_data[column] = self.data[column].copy()
+        else:
+            for column in self.columns:
+                new_data[column] = self.data[column].arithmetic(other, op)
+
+        return DataFrame(new_data, index=self.index.copy())
+
+    def reverse_arithmetic(self, other, op):
+        new_data = {}
+
+        for column in self.columns:
+            result = op(other, self.data[column].data)
+            new_data[column] = Series(result, index=self.index.copy(), name=column)
+
+        return DataFrame(new_data, index=self.index.copy())
+
+    def _compare(self, other, op):
+        return self.arithmetic(other, op)
+
+    def __add__(self, other):
+        return self.arithmetic(other, np.add)
+
+    def __radd__(self, other):
+        return self.reverse_arithmetic(other, np.add)
+
+    def __sub__(self, other):
+        return self.arithmetic(other, np.subtract)
+
+    def __rsub__(self, other):
+        return self.reverse_arithmetic(other, np.subtract)
+
+    def __mul__(self, other):
+        return self.arithmetic(other, np.multiply)
+
+    def __rmul__(self, other):
+        return self.reverse_arithmetic(other, np.multiply)
+
+    def __truediv__(self, other):
+        return self.arithmetic(other, np.divide)
+
+    def __rtruediv__(self, other):
+        return self.reverse_arithmetic(other, np.divide)
+
+    def __eq__(self, other):
+        return self._compare(other, np.equal)
+
+    def __ne__(self, other):
+        return self._compare(other, np.not_equal)
+
+    def __gt__(self, other):
+        return self._compare(other, np.greater)
+
+    def __ge__(self, other):
+        return self._compare(other, np.greater_equal)
+
+    def __lt__(self, other):
+        return self._compare(other, np.less)
+
+    def __le__(self, other):
+        return self._compare(other, np.less_equal)
 
     @classmethod
     def from_csv(cls, filename):
