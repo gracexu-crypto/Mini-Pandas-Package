@@ -98,11 +98,25 @@ class Series:
     def max(self):
         return self.data.max()
 
-    def count(self):
-        # TODO: For now, count() returns the total number of values.
-        # After implementing missing value handling and filtering,
-        # update this method to count only non-NA values.
-        return len(self.data)
+     def count(self):
+        total = 0
+
+        for value in self.data:
+            if value is not None and value != "":
+                total += 1
+
+        return total
+
+def fillna(self, value):
+        result = []
+
+        for item in self.data:
+            if item is None or item == "":
+                result.append(value)
+            else:
+                result.append(item)
+
+        return Series(result, index=self.index.copy(), name=self.name)
     
     # only supports Series with scalar for now
     def arithmetic(self, other, op):
