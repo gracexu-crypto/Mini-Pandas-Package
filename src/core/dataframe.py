@@ -190,6 +190,11 @@ class DataFrame:
 
         return DataFrame(new_data, index=self.index.copy())
 
+    def groupby(self, by):
+        from .groupby import GroupBy
+
+        return GroupBy(self, by)
+
     def arithmetic(self, other, op):
         new_data = {}
 
