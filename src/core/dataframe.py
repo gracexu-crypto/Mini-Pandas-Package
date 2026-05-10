@@ -347,3 +347,35 @@ class DataFrame:
                     new_data[column].append(self.data[column].data[row_pos])
 
         return DataFrame(new_data, index=new_index)
+
+ def merge(self, other, on):
+        if on not in self.columns:
+            raise KeyError(on)
+
+        if on not in other.columns:
+            raise KeyError(on)
+
+        new_data = {}
+
+        for column in self.columns:
+            new_data[column] = []
+
+        for column in other.columns:
+            if column != on:
+                new_data[column] = []
+
+        for left_pos in range(len(self.index)):
+            left_key = self.data[on].data[left_pos]
+
+            for right_pos in range(len(other.index)):
+                right_key = other.data[on].data[right_pos]
+
+                if left_key == right_key:
+                    for column in self.columns:
+                        new_data[column].append(self.data[column].data[left_pos])
+
+                    for column in other.columns:
+                        if column != on:
+                            new_data[column].append(other.data[column].data[right_pos])
+
+        return DataFrame(new_data)
