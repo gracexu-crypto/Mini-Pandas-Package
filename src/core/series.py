@@ -98,7 +98,7 @@ class Series:
     def max(self):
         return self.data.max()
 
-     def count(self):
+    def count(self):
         total = 0
 
         for value in self.data:
@@ -107,7 +107,7 @@ class Series:
 
         return total
 
-def fillna(self, value):
+    def fillna(self, value):
         result = []
 
         for item in self.data:
