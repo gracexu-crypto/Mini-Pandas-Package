@@ -118,7 +118,6 @@ class Series:
 
         return Series(result, index=self.index.copy(), name=self.name)
     
-    # only supports Series with scalar for now
     def arithmetic(self, other, op):
         result = op(self.data, other)
         return Series(result, index=self.index, name=self.name)
