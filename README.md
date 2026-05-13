@@ -66,3 +66,11 @@ I solved this by first building a dictionary from the right table, where each ke
 In general, my biggest takeaway from this project was that the hardest part was not only writing individual functions, but also making sure all the pieces worked together correctly. This made me realize that as a project gets bigger, keeping the parts connected correctly becomes just as important as writing each function.
 
 ### Danielle:
+
+One of the biggest challenges for me during this project was making sure our mini-pandas package actually produced the same results as pandas. At first, I thought writing the tests would be pretty straightforward, but once I started comparing outputs, I realized there were a lot of small edge cases that could cause problems. Some functions worked on simple examples but gave different results when there were missing values, empty filters, or larger datasets like the Titanic dataset.
+
+To solve this, I created a lot of test cases using pytest and directly compared our outputs with pandas outputs. I tested DataFrame creation, Series behavior, filtering, aggregation functions, GroupBy operations, and merge behavior. Comparing our package to pandas helped us find bugs faster because we could immediately see where something was off.
+
+Another challenge for me was implementing aggregation functions like sum, mean, count, min, and max while handling missing values correctly. At first, the count function counted missing values too, which made some of our results different from pandas. I fixed this by updating the logic so missing values like None or empty strings were ignored during calculations. After that, the outputs matched pandas much more closely.
+
+Overall, this project made me realize how important testing and debugging are when building software. Writing the actual function was sometimes the easier part; the harder part was making sure everything worked together correctly and handled different situations without breaking. I also learned a lot more about how pandas works internally and gained more experience working with Python classes, pytest, GitHub collaboration, and debugging code as part of a team.
