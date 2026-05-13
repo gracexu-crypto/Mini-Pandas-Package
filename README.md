@@ -45,7 +45,7 @@ python -m pytest
 To demonstrate our project, our team discussed and designed four interesting questions based on the Titanic dataset. We then wrote an interesting_questions.py script that shows the results produced by our mini-pandas package and compares them with the results produced by the standard pandas package.
 
 Here is the result:
-![[interesting questions.png]]
+![Interesting questions result](images/interesting_questions.png)
 For details about the script, you can refer to the `interesting_questions.py` file.
 
 The results were actually pretty surprising to us.
